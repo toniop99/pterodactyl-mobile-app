@@ -39,9 +39,18 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo "${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/github_actions.mobileprovision
 
-      - name: Build IPA
-        run: flutter build ipa --export-options-plist=ios/GithubActionsExportOptions.plist
+      # - name: Build unsigned IPA
+      #   run: flutter build ipa --export-options-plist=ios/GithubActionsExportOptions.plist
  
+      - name: Build unsigned IPA
+        run: flutter build ipa --no-codesign
+ 
+      - name: Sign and export IPA
+        run: |
+          xcodebuild -exportArchive -archivePath build/ios/archive/Runner.xcarchive \
+          -exportPath build/ios/ipa \
+          -exportOptionsPlist ios/GithubActionsExportOptions.plist
+
       - name: Flutter Clean
         run: flutter clean
 
