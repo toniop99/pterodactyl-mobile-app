@@ -150,12 +150,12 @@ class _ServerSettingsState extends State<ServerSettings> {
     // Simulate API call
     await Future.delayed(const Duration(seconds: 2));
 
-    setState(() {
-      _isSaving = false;
-      _hasUnsavedChanges = false;
-    });
-
     if (mounted) {
+      setState(() {
+        _isSaving = false;
+        _hasUnsavedChanges = false;
+      });
+
       final navigator = Navigator.of(context);
       final theme = Theme.of(context);
       Fluttertoast.showToast(
@@ -649,7 +649,10 @@ class _ServerSettingsState extends State<ServerSettings> {
                         '/backup-management',
                       ];
 
-                      Navigator.pushReplacementNamed(context, routes[index]);
+                      if (context.mounted) {
+                        Navigator.pushReplacementNamed(context, routes[index]);
+                      }
+
                     }
                   });
                 } else {

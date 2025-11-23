@@ -421,6 +421,7 @@ class _FileManagerState extends State<FileManager> {
     if (_serverIdentifier == null) return;
 
     final TextEditingController nameController = TextEditingController();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     final folderName = await showDialog<String>(
       context: context,
@@ -454,14 +455,17 @@ class _FileManagerState extends State<FileManager> {
           '$_currentDirectory/$folderName',
         );
 
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (!mounted) return;
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Created folder: $folderName')),
         );
 
         // Reload directory
         await _loadDirectory(_currentDirectory);
       } catch (e) {
-        _showError('Failed to create folder: $e');
+        if (mounted) {
+          _showError('Failed to create folder: $e');
+        }
       }
     }
   }
@@ -536,9 +540,8 @@ class _FileManagerState extends State<FileManager> {
     });
   }
 
-  Future<void> _deleteItem(Map<String, dynamic> item) async {
-    if (_serverIdentifier == null) return;
-
+  void _deleteItem(Map<String, dynamic> item) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -569,23 +572,26 @@ class _FileManagerState extends State<FileManager> {
           [item['path'] as String],
         );
 
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (!mounted) return;
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Deleted ${item['name']}')),
         );
-
-        // Reload directory
         await _loadDirectory(_currentDirectory);
       } catch (e) {
-        _showError('Failed to delete file: $e');
+        if (!mounted) return;
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Error deleting file: $e')),
+        );
       }
     }
   }
 
-  Future<void> _renameItem(Map<String, dynamic> item) async {
+  void _renameItem(Map<String, dynamic> item) async {
     if (_serverIdentifier == null) return;
 
     final TextEditingController nameController =
         TextEditingController(text: item['name'] as String);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     final newName = await showDialog<String>(
       context: context,
@@ -619,14 +625,17 @@ class _FileManagerState extends State<FileManager> {
           '$_currentDirectory/$newName',
         );
 
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (!mounted) return;
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Renamed to $newName')),
         );
 
         // Reload directory
         await _loadDirectory(_currentDirectory);
       } catch (e) {
-        _showError('Failed to rename file: $e');
+        if (mounted) {
+          _showError('Failed to rename file: $e');
+        }
       }
     }
   }

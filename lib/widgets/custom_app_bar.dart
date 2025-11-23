@@ -109,7 +109,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           gradient: LinearGradient(
             colors: [
               colorScheme.primary,
-              colorScheme.primary.withOpacity(0.8),
+              colorScheme.primary.withValues(alpha: 0.8),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -227,7 +227,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: statusColor.withOpacity(0.5),
+            color: statusColor.withValues(alpha: 0.5),
             blurRadius: 4,
             spreadRadius: 1,
           ),
@@ -246,17 +246,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: colorScheme.surface.withOpacity(0.1),
+          color: colorScheme.surface.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
           children: [
-            Icon(Icons.search, color: colorScheme.onPrimary.withOpacity(0.8)),
+            Icon(Icons.search, color: colorScheme.onPrimary.withValues(alpha: 0.8)),
             const SizedBox(width: 8),
             Text(
               'Search servers...',
               style: TextStyle(
-                color: colorScheme.onPrimary.withOpacity(0.8),
+                color: colorScheme.onPrimary.withValues(alpha: 0.8),
               ),
             ),
           ],

@@ -103,7 +103,7 @@ class _ServerDashboardState extends State<ServerDashboard>
               }
             } catch (e) {
               // Silently continue if resource fetch fails for individual server
-              print(
+              AppLogger.warning(
                   'Failed to fetch resources for ${updatedServers[i].identifier}: $e');
             }
           }
