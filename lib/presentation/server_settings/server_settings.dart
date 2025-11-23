@@ -156,15 +156,17 @@ class _ServerSettingsState extends State<ServerSettings> {
     });
 
     if (mounted) {
+      final navigator = Navigator.of(context);
+      final theme = Theme.of(context);
       Fluttertoast.showToast(
         msg: "Settings saved successfully",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: theme.colorScheme.primary,
         textColor: Colors.white,
       );
 
-      Navigator.of(context).pop();
+      navigator.pop();
     }
   }
 
@@ -192,7 +194,7 @@ class _ServerSettingsState extends State<ServerSettings> {
                   ),
                   SizedBox(height: 2.h),
                   DropdownButtonFormField<String>(
-                    value: selectedProtocol,
+                    initialValue: selectedProtocol,
                     items: ['TCP', 'UDP', 'TCP/UDP'].map((String protocol) {
                       return DropdownMenuItem<String>(
                         value: protocol,

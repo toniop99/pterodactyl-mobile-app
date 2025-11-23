@@ -1,3 +1,5 @@
+import 'package:pterodactyl_app/core/logger.dart';
+
 import 'package:dio/dio.dart';
 import '../models/backup_model.dart';
 import '../models/file_model.dart';
@@ -29,16 +31,16 @@ class PterodactylClientApiService {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          print('🌐 API Request: ${options.method} ${options.path}');
+          AppLogger.debug('🌐 API Request: ${options.method} ${options.path}');
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          print(
+          AppLogger.info(
               '✅ API Response: ${response.statusCode} ${response.requestOptions.path}');
           return handler.next(response);
         },
         onError: (error, handler) {
-          print('❌ API Error: ${error.response?.statusCode} ${error.message}');
+          AppLogger.error('❌ API Error: ${error.response?.statusCode} ${error.message}');
           return handler.next(error);
         },
       ),

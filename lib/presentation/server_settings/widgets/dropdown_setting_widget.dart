@@ -31,7 +31,7 @@ class DropdownSettingWidget extends StatelessWidget {
         ),
         SizedBox(height: 1.h),
         DropdownButtonFormField<String>(
-          value: value,
+          initialValue: value,
           items: options.map((String option) {
             return DropdownMenuItem<String>(
               value: option,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pterodactyl_app/core/logger.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
@@ -130,7 +131,7 @@ class _ServerDashboardState extends State<ServerDashboard>
             });
           }
         } catch (e) {
-          print('Error in realtime updates: $e');
+          AppLogger.error('Error in realtime updates: $e');
         }
         _startRealtimeUpdates();
       }

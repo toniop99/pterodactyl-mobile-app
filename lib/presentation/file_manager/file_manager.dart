@@ -39,7 +39,7 @@ class _FileManagerState extends State<FileManager> {
   List<String> _pathSegments = [];
   List<FileModel> _currentFiles = [];
   List<Map<String, dynamic>> _filteredFiles = [];
-  Set<String> _selectedItems = {};
+  final Set<String> _selectedItems = {};
   bool _isMultiSelectMode = false;
   bool _isSearching = false;
   bool _isLoading = false;
@@ -126,8 +126,9 @@ class _FileManagerState extends State<FileManager> {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024)
+    if (bytes < 1024 * 1024 * 1024) {
       return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -145,7 +146,7 @@ class _FileManagerState extends State<FileManager> {
     if (segmentIndex == 0) {
       _loadDirectory('/');
     } else {
-      final path = '/' + _pathSegments.sublist(0, segmentIndex).join('/');
+      final path = '/${_pathSegments.sublist(0, segmentIndex).join('/')}';
       _loadDirectory(path);
     }
   }
@@ -174,13 +175,6 @@ class _FileManagerState extends State<FileManager> {
         _showFilePreview(item);
       }
     }
-  }
-
-  void _onItemLongPress(Map<String, dynamic> item) {
-    setState(() {
-      _isMultiSelectMode = true;
-      _selectedItems.add(item['path'] as String);
-    });
   }
 
   void _showFilePreview(Map<String, dynamic> file) {
@@ -286,7 +280,8 @@ class _FileManagerState extends State<FileManager> {
       }
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Downloaded $fileName')),
       );
     } catch (e) {
@@ -357,7 +352,8 @@ class _FileManagerState extends State<FileManager> {
         }
 
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        final scaffoldMessenger = ScaffoldMessenger.of(context);
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Uploaded $fileName')),
         );
 

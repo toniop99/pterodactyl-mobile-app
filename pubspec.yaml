@@ -52,6 +52,7 @@ dependencies:
   rxdart: ^0.27.7
   shared_preferences: ^2.5.3
   flutter_launcher_icons: ^0.14.4
+  logger: ^2.6.2
 
 dev_dependencies:
   flutter_test:

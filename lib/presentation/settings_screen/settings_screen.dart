@@ -48,6 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         clientApiKey: clientApiKey,
       );
 
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, AppRoutes.serverDashboard);
     }
   }

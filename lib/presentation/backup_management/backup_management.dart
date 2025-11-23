@@ -538,7 +538,7 @@ class _BackupManagementState extends State<BackupManagement> {
                 const Text('Frequency'),
                 SizedBox(height: 1.h),
                 DropdownButtonFormField<String>(
-                  value: selectedFrequency,
+                  initialValue: selectedFrequency,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                   ),
@@ -645,7 +645,7 @@ class _BackupManagementState extends State<BackupManagement> {
             ),
             SizedBox(height: 2.h),
             DropdownButtonFormField<String>(
-              value: _filterMethod,
+              initialValue: _filterMethod,
               decoration: const InputDecoration(
                 labelText: 'Filter by method',
                 border: OutlineInputBorder(),

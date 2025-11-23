@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:dartactyl/dartactyl.dart';
 import 'package:dartactyl/websocket.dart';
+import 'package:pterodactyl_app/core/logger.dart';
 
 /// Pterodactyl WebSocket Service
 /// Handles real-time console log streaming via WebSocket
@@ -51,14 +52,13 @@ class PterodactylWebSocketService {
         serverId: serverIdentifier,
         autoConnect: true,
         onConnectionError: (error, stackTrace) {
-          print('❌ WebSocket Connection Error: $error');
-          print('StackTrace: $stackTrace');
+          AppLogger.error('❌ WebSocket Connection Error: $error', error, stackTrace);
           _updateWebsocketState(WebSocketState.error);
         },
       );
 
       _serverWebsocket!.connectionState.listen((event) {
-        print('🔄 WebSocket Connection State Changed: $event');
+        AppLogger.info('🔄 WebSocket Connection State Changed: $event');
         switch (event) {
           case ConnectionState.connected:
             _updateWebsocketState(WebSocketState.connected);
@@ -78,11 +78,11 @@ class PterodactylWebSocketService {
         }
       });
 
-      // print('✅ WebSocket Connected to: $serverIdentifier');
+      // AppLogger.info('✅ WebSocket Connected to: $serverIdentifier');
     
 
       // _serverWebsocket!.stats.listen((event) {
-      //     print(event.toString());
+      //     AppLogger.verbose(event.toString());
           
       //     _messageController?.add(ConsoleMessage(
       //       message: event.toString(),
@@ -92,7 +92,7 @@ class PterodactylWebSocketService {
       // });
 
       // _serverWebsocket!.powerState.listen((event) {
-      //   print('Power State Changed: $event');
+      //   AppLogger.info('Power State Changed: $event');
         
       //   _messageController?.add(ConsoleMessage(
       //     message: 'Power State Changed: $event',
@@ -102,7 +102,7 @@ class PterodactylWebSocketService {
       // });
       
       _serverWebsocket!.logs.listen((event) {
-        print('Log Received: $event');
+        AppLogger.verbose('Log Received: $event');
         
         _messageController?.add(ConsoleMessage(
           message: event.message,
@@ -113,8 +113,8 @@ class PterodactylWebSocketService {
 
 
       
-    } catch (e) {
-      print('❌ WebSocket Connection Failed: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('❌ WebSocket Connection Failed: $e', e, stackTrace);
       _updateWebsocketState(WebSocketState.error);
       rethrow;
     }
@@ -198,7 +198,7 @@ class PterodactylWebSocketService {
 
   /// Disconnect WebSocket
   Future<void> disconnect() async {
-    print('🔌 Disconnecting WebSocket...');
+    AppLogger.info('🔌 Disconnecting WebSocket...');
 
     await _serverWebsocket?.disconnect();
     _serverWebsocket = null;
