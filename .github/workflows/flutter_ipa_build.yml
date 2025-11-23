@@ -1,0 +1,58 @@
+name: Flutter iOS Build (IPA)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Install CocoaPods
+        run: sudo gem install cocoapods
+
+      - name: Install iOS Pods
+        run: pod install
+        working-directory: ios/
+
+      - name: Create ExportOptions.plist for Development
+        env:
+          TEAM_ID: ${{ secrets.IOS_BUILD_TEAM_ID }}
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > ExportOptions.plist
+          echo "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" >> ExportOptions.plist
+          echo "<plist version=\"1.0\">" >> ExportOptions.plist
+          echo "<dict>" >> ExportOptions.plist
+          echo "    <key>method</key>" >> ExportOptions.plist
+          echo "    <string>development</string>" >> ExportOptions.plist
+          echo "    <key>teamID</key>" >> ExportOptions.plist
+          echo "    <string>${TEAM_ID}</string>" >> ExportOptions.plist
+          echo "    <key>compileBitcode</key>" >> ExportOptions.plist
+          echo "    <false/>" >> ExportOptions.plist
+          echo "    <key>thinning</key>" >> ExportOptions.plist
+          echo "    <string><none></string>" >> ExportOptions.plist
+          echo "</dict>" >> ExportOptions.plist
+          echo "</plist>" >> ExportOptions.plist
+
+      - name: Build and Export IPA
+        run: flutter build ipa --export-options-plist=ExportOptions.plist
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PterodactylApp-iOS-IPA
+          path: build/ios/ipa/*.ipa
