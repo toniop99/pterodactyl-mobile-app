@@ -26,6 +26,9 @@ jobs:
           provisioning-profile-base64: ${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64 }}
           keychain-password: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
 
+      - name: Flutter Clean
+        run: flutter clean
+
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
