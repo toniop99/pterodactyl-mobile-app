@@ -29,6 +29,13 @@ jobs:
         run: pod install
         working-directory: ios/
 
+      - name: Import Code-Signing Certificates
+        uses: apple-actions/import-codesign-certs@v2
+        with:
+          p12-file-base64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          provisioning-profile-base64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+
       - name: Create ExportOptions.plist for Development
         env:
           TEAM_ID: ${{ secrets.IOS_BUILD_TEAM_ID }}
