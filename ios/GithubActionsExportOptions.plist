@@ -11,7 +11,7 @@
 	<key>stripSwiftSymbols</key>
 	<true/>
 	<key>teamID</key>
-	<string>${TEAM_ID}</string>
+	<string>${IOS_BUILD_TEAM_ID}</string>
 	<key>thinning</key>
 	<string>&lt;none&gt;</string>
 </dict>

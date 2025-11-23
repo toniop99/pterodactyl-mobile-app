@@ -13,19 +13,35 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
 
       - name: Substitute Team ID in Export Options Plist
         run: |
-          sed -i '' 's/${TEAM_ID}/${{ secrets.TEAM_ID }}/g' ios/GithubActionsExportOptions.plist
+          sed -i '' 's/${IOS_BUILD_TEAM_ID}/${{ secrets.IOS_BUILD_TEAM_ID }}/g' ios/GithubActionsExportOptions.plist
 
-      - uses: cedvdb/action-flutter-build-ios@v1
+      - name: Create keychain
+        uses: apple-actions/import-codesign-certs@v3
         with:
-          build-cmd: flutter build ipa --export-options-plist=ios/GithubActionsExportOptions.plist
-          certificate-base64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
-          certificate-password: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
-          provisioning-profile-base64: ${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64 }}
           keychain-password: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
+          p12-file-base64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
 
+      - name: Install provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/github_actions.mobileprovision
+
+      - name: Build IPA
+        run: flutter build ipa --export-options-plist=ios/GithubActionsExportOptions.plist
+ 
       - name: Flutter Clean
         run: flutter clean
 
