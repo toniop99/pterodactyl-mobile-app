@@ -18,7 +18,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          # cache: true
+          cache: true
 
       - name: Install dependencies
         run: flutter pub get
@@ -27,35 +27,41 @@ jobs:
         run: |
           sed -i '' 's/${IOS_BUILD_TEAM_ID}/${{ secrets.IOS_BUILD_TEAM_ID }}/g' ios/GithubActionsExportOptions.plist
 
-      - name: Create keychain
-        uses: apple-actions/import-codesign-certs@v3
-        with:
-          keychain-password: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
-          p12-file-base64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
-          p12-password: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
+      # - name: Create keychain
+      #   uses: apple-actions/import-codesign-certs@v3
+      #   with:
+      #     keychain-password: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
+      #     p12-file-base64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
+      #     p12-password: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
 
-      - name: Install provisioning profile
-        run: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/github_actions.mobileprovision
+      # - name: Install provisioning profile
+      #   run: |
+      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+      #     echo "${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/github_actions.mobileprovision
 
-      # - name: Build unsigned IPA
+      # - name: Build signed IPA
       #   run: flutter build ipa --export-options-plist=ios/GithubActionsExportOptions.plist
  
-      - name: Build unsigned IPA
+      - name: Build unsigned archive
         run: flutter build ipa --no-codesign
  
-      - name: Sign and export IPA
-        run: |
-          xcodebuild -exportArchive -archivePath build/ios/archive/Runner.xcarchive \
-          -exportPath build/ios/ipa \
-          -exportOptionsPlist ios/GithubActionsExportOptions.plist
+      # - name: Sign and export IPA
+      #   run: |
+      #     xcodebuild -exportArchive -archivePath build/ios/archive/Runner.xcarchive \
+      #     -exportPath build/ios/ipa \
+      #     -exportOptionsPlist ios/GithubActionsExportOptions.plist
 
-      - name: Flutter Clean
-        run: flutter clean
+      - name: Zip the archive
+        run: zip -r Runner.xcarchive.zip build/ios/archive/Runner.xcarchive
 
-      - name: Upload IPA Artifact
+      # - name: Upload IPA Artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: PterodactylApp-iOS-IPA
+      #     path: build/ios/ipa/*.ipa
+
+      - name: Upload Archive Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PterodactylApp-iOS-IPA
-          path: build/ios/ipa/*.ipa
+          name: PterodactylApp-iOS-Archive
+          path: Runner.xcarchive.zip
