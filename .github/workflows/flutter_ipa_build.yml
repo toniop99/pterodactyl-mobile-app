@@ -14,49 +14,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-
-      - name: Install Dependencies
-        run: flutter pub get
-
-      - name: Install CocoaPods
-        run: sudo gem install cocoapods
-
-      - name: Install iOS Pods
-        run: pod install
-        working-directory: ios/
-
-      - name: Import Code-Signing Certificates
-        uses: apple-actions/import-codesign-certs@v2
-        with:
-          p12-file-base64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
-          p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-          provisioning-profile-base64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
-
-      - name: Create ExportOptions.plist for Development
-        env:
-          TEAM_ID: ${{ secrets.IOS_BUILD_TEAM_ID }}
+      - name: Substitute Team ID in Export Options Plist
         run: |
-          echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > ExportOptions.plist
-          echo "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" >> ExportOptions.plist
-          echo "<plist version=\"1.0\">" >> ExportOptions.plist
-          echo "<dict>" >> ExportOptions.plist
-          echo "    <key>method</key>" >> ExportOptions.plist
-          echo "    <string>development</string>" >> ExportOptions.plist
-          echo "    <key>teamID</key>" >> ExportOptions.plist
-          echo "    <string>${TEAM_ID}</string>" >> ExportOptions.plist
-          echo "    <key>compileBitcode</key>" >> ExportOptions.plist
-          echo "    <false/>" >> ExportOptions.plist
-          echo "    <key>thinning</key>" >> ExportOptions.plist
-          echo "    <string><none></string>" >> ExportOptions.plist
-          echo "</dict>" >> ExportOptions.plist
-          echo "</plist>" >> ExportOptions.plist
+          sed -i '' 's/${TEAM_ID}/${{ secrets.TEAM_ID }}/g' ios/GithubActionsExportOptions.plist
 
-      - name: Build and Export IPA
-        run: flutter build ipa --export-options-plist=ExportOptions.plist
+      - uses: cedvdb/action-flutter-build-ios@v1
+        with:
+          build-cmd: flutter build ipa --export-options-plist=GithubActionsExportOptions.plist
+          certificate-base64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
+          certificate-password: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
+          provisioning-profile-base64: ${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64 }}
+          keychain-password: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
